@@ -1,0 +1,4 @@
+venv/
+server/static/
+**/__pycache__/
+server/erp_backend/companies.json

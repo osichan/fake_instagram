@@ -1,0 +1,10 @@
+.idea/
+.DS_Store
+.env
+db/
+docker-launch.sh
+redis_db/
+certbot/
+cloudflare.ini
+*.pem
+node_modules/
