@@ -2,7 +2,8 @@ from django.db import models
 
 
 class UserManager(models.Manager):
-    def create_user(self, email, name, username, password, bio='', profile_picture=None):
+    def create_user(self, email: str, name: str, username: str, password: str, bio: str = '',
+                    profile_picture: int = None):
         user = self.model(
             email=email,
             name=name,
@@ -11,31 +12,31 @@ class UserManager(models.Manager):
             bio=bio,
             profile_picture=profile_picture
         )
-        user.save(using=self._db)
+        user.save()
         return user
 
-    def update_user(self, user_id, **kwargs):
+    def update_user(self, user_id: int, **kwargs):
         user = self.get(pk=user_id)
         for attr, value in kwargs.items():
             setattr(user, attr, value)
         user.save(using=self._db)
         return user
 
-    def delete_user(self, user_id):
+    def delete_user(self, user_id: int):
         user = self.get(pk=user_id)
         user.delete()
 
 
 class FollowerManager(models.Manager):
-    def add_follower(self, follower_id, followee_id):
+    def add_follower(self, follower: int, followee: int):
         follower = self.model(
-            follower_id=follower_id,
-            followee_id=followee_id
+            follower=follower,
+            followee=followee
         )
         follower.save(using=self._db)
         return follower
 
-    def remove_follower(self, follower_id, followee_id):
+    def remove_follower(self, followee_id: int, follower_id: int):
         try:
             follower = self.get(follower_id=follower_id, followee_id=followee_id)
             follower.delete()
@@ -45,12 +46,17 @@ class FollowerManager(models.Manager):
 
 class User(models.Model):
     objects = UserManager()
-    email = models.CharField(max_length=255, unique=True, null=False)
+    email = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=45)
-    username = models.CharField(max_length=45, unique=True, null=False)
-    password = models.CharField(max_length=45, null=False)
-    bio = models.CharField(max_length=255)
-    profile_picture = models.IntegerField()
+    username = models.CharField(max_length=45, unique=True)
+    password = models.CharField(max_length=45)
+    bio = models.CharField(max_length=255, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/',
+                                        default="/static/images/default_profile_picture.jpg")
+
+    class Meta:
+        app_label = 'users'
+        db_table = 'user'
 
     def __str__(self):
         return self.username
@@ -58,8 +64,14 @@ class User(models.Model):
 
 class Follower(models.Model):
     objects = FollowerManager()
-    follower_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
-    followee_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+    followee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+
+    class Meta:
+        app_label = 'users'
+        db_table = 'follower'
+        unique_together = ('follower', 'followee')
+
 
     def __str__(self):
-        return f"{self.follower_id} -> {self.followee_id}"
+        return f"{self.follower} -> {self.followee}"
