@@ -8,18 +8,20 @@ class UserManager(models.Manager):
             email=email,
             name=name,
             username=username,
-            password=password,
             bio=bio,
             profile_picture=profile_picture
         )
+        user.set_password(password)
         user.save()
         return user
 
     def update_user(self, user_id: int, **kwargs):
         user = self.get(pk=user_id)
         for attr, value in kwargs.items():
+            if attr == 'password':
+                user.set_password(value)
             setattr(user, attr, value)
-        user.save(using=self._db)
+        user.save()
         return user
 
     def delete_user(self, user_id: int):
