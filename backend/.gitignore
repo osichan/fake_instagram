@@ -1,0 +1,7 @@
+venv/
+server/static/
+**/__pycache__/
+.env
+.idea/
+./instagram_backend/.idea
+../.idea
