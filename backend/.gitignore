@@ -4,3 +4,4 @@ server/static/
 .env
 .idea/
 ./instagram_backend/.idea
+../.idea
