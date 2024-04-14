@@ -74,6 +74,5 @@ class Follower(models.Model):
         db_table = 'follower'
         unique_together = ('follower', 'followee')
 
-
     def __str__(self):
         return f"{self.follower} -> {self.followee}"
